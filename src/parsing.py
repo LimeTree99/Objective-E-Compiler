@@ -61,14 +61,20 @@ class Symbol:
         param:
         grammar (Grammar): the grammar this symbol is a part of
         """
+        # be sure that there is no left recursion
         
-        # potential bug: this does not do recursive productions
-        # ie self.name is not searched for in self.rules
-        # wait self.name can only appear at the end of
-        # each rule in self.rules so the follow would just 
-        # be the follow of self anyway
-        # so your good. 
-        # just be sure that there is no left recursion
+        # for epsilon:
+        # only relivent in situations such as for 
+        # follow of B: A->aBC, C->ε
+        # where 1 or more productions with ε follow 
+        # the production we are trying to find the 
+        # follow of 
+        # stratagy:
+        # recursively add the follow of each production 
+        # where A->ε to the current production
+        # ex. 
+        # A->aBCDb, C->ε, D->ε
+        # follow(B) = follow(C) = follow(C)
         
         if len(self.follow) == 0:
             print('compute follow of ' + self.name)
@@ -88,15 +94,19 @@ class Symbol:
                                     pass
                                 else:
                                     # symbol found in middile of production
-                                    add_first = grammar.get_production(rule_split[index + 1])
-                                    if add_first == None:
+                                    next_prod = grammar.get_production(rule_split[index + 1])
+                                    if next_prod == None:
                                         # terminal
                                         print(rule_split[index + 1], ' add to ' + self.name)
                                         self.follow.append(rule_split[index + 1])
                                     else:
                                         # other production
-                                        print(add_first.get_first(), ' add to ' + self.name)
-                                        self.follow.extend(add_first.get_first())
+                                        print(next_prod.get_first(), ' add to ' + self.name)
+                                        self.follow.extend(next_prod.get_first())
+                                        if 'ε' in next_prod.get_first():
+                                            self.follow.remove('ε')
+                                            next_prod.compute_follow(grammar)
+                                            self.follow.extend(next_prod.follow)
                                     
                             
             

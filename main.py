@@ -33,8 +33,10 @@ if __name__ == '__main__':
     
     print('==========================================')
     print('Gram 2')
-    gram2 = Grammar([Symbol('S', ['x OP x', 'x'], False),
-                    Symbol('OP', ['+','-'], False),
+    gram2 = Grammar([
+                        Symbol('S', ['START MAYBE end'], False),
+                        Symbol('START', ['start'], False),
+                        Symbol('MAYBE', ['maybe', 'ε'], False),
                     ],)
     
     print(gram2)
