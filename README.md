@@ -1,5 +1,6 @@
 # Compiler for small Language
-Currently working on lexing 
+Currently working on lexing.
+
 Refer to specification/language_manual.txt for plans for the language, implimantation details and ongoing ramblings about my programming philosophies
 
 ## Development stratagy
