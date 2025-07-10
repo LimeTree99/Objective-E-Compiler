@@ -1,0 +1,114 @@
+========================
+       Objective E
+========================
+
+Overview:
+The goal of this language is primarally to learn about programming language creation.
+It will be an Object oriented, strongly typed language that compiles down to c.
+It's basically just C with objects and some extra added flair 
+
+ethics:
+this language will not include break statments:
+    I do not like them, that is why
+    and also and ode to David Brown
+    
+    
+    
+specifications:
+
+classes will be defined with the "class" keyword, attributes are initalized directly 
+beneth the class declaration. Attributes are accesed with the "@" symble. The 
+Constructor has the same name as the class
+
+
+                        -------------------------------------
+                            class Person{
+                                str name;
+                                int age;
+                                void Person(name, age){
+                                    @name = name;
+                                    @age = age;
+                                }
+                            }
+                            
+                            class Main{
+                                int Main(){
+                                    Person dan = Person("Dan", 30)
+                                }
+                            }
+                        -------------------------------------
+
+Notes on grammar:
+    the grammar that you need to create is a context free grammar. 
+    ambiguity: when multiple parse trees could be created from a single grammar
+    recursive: we want to avoid left resursion, right recusion is all right
+    left-factoring: when two of the outputs start with the same thing so it's 
+                    imposible to know what to start with
+
+
+context free grammar: pre left factoring
+    "?" indicates I still need to write that production
+    some troubles: how do I differentiate between a type and an identifier? do I need to? I think that'll come later
+    START           ->  CLASS | IMPORT
+    IMPORT          ->  import identifier
+    CLASS           ->  class identifier { CLASS_CONTENT }
+    CLASS_CONTENT   ->  FUNC_DEC | CLASS | ATTRIBUTE
+    ATTRIBUTE       ->  TYPE identifier ;
+    FUNC_DEC        ->  TYPE identifier ( ARGS ) { STMT }
+    # 1
+    ARGS            ->  ARG | ARG , ARGS | ε    
+    ARG             ->  TYPE identifier | TYPE identifier = literal
+    # 2
+    BOOL_EXPR       ->  BOOL_TERM | BOOL_TERM BOOL_OP BOOL_EXPR
+    BOOL_OP         ->  & | "|" 
+    BOOL_TERM       ->  literal | FUNC | identifier
+    
+    
+    STMT            ->  FUNC | DECLARATION | identifier = ASIGNMENT | BRANCH | LOOP | RETURN
+    
+    FUNC            ->  identifier ( ? ) ;
+    
+    DECLARATION     ->  identifier identifier ; | identifier identifier = ASIGNMENT ;
+    
+    ASIGNMENT       ->  BOOL_EXPR | 
+    
+    BRANCH          ->  BRANCH_IF BRANCH_ElSE_IF BRANCH_ELSE
+    BRANCH_IF       ->  if ( BOOL_EXPR ) { STMT } 
+    BRANCH_ElSE_IF  ->  else if ( BOOL_EXPR ) { STMT } | ε
+    BRANCH_ELSE     ->  else { STMT } | ε
+    
+    LOOP            ->  while ( BOOL_EXPR ) { STMT } | for ( ? ) { STMT }
+    
+    RETURN          ->  return ASIGHNMENT ;
+    
+context free grammar: post left factoring
+    some troubles: how do I differentiate between a type and an identifier? do I need to?
+    START           ->  CLASS | IMPORT
+    IMPORT          ->  import identifier
+    CLASS           ->  class identifier { CLASS_CONTENT }
+    CLASS_CONTENT   ->  FUNC_DEC | CLASS | ATTRIBUTE
+    ATTRIBUTE       ->  TYPE identifier ;
+    FUNC_DEC        ->  TYPE identifier ( ARGS ) { STMT }
+    # 1
+    ARGS            ->  ARGS' | ε         // pretty sure this is right
+    ARGS'           ->  ARG ARGS''
+    ARGS''          ->  , ARGS' | ε
+    ARG             ->  TYPE identifier | TYPE identifier = IDENTIFIER
+    
+    STMT            ->  FUNC | ASIGNMENT | BRANCH | LOOP | RETURN
+    
+    RETURN          ->  return RETURN_CONTENT ;
+    RETURN_CONTENT  ->  FUNC | OPERATION
+    
+    
+regular grammar:
+
+
+Native datatypes:
+    bool
+    int
+    float
+    string
+    array
+    list
+    
