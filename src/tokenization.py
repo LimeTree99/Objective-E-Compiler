@@ -6,15 +6,15 @@ class Token:
         self.id = id
         self.name = name
         self.type = typ
-        self.value = content
+        self.content = content
         
     def __str__(self):
-        return f"<Token object; id={self.id} name={self.name} type={self.type}, value={self.value}>"
+        return f"<Token object; id={self.id} name={self.name} type={self.type}, content={self.content}>"
 
 class Tokenize:
     def __init__(self):
         # order of this list is important
-        self.token_list = [
+        self.token_description = [
             {"name":"class" ,"type":"keyword", "re":re.compile(r"class")},
             {"name":"return" ,"type":"keyword", "re":re.compile(r"return")},
             {"name":"if" ,"type":"keyword", "re":re.compile(r"if")},
@@ -25,7 +25,7 @@ class Tokenize:
             {"name":"false" ,"type":"literal_bool", "re":re.compile(r"false")},
             {"name":"float" ,"type":"literal", "re":re.compile(r"\d+\.\d*")},
             {"name":"int" ,"type":"literal", "re":re.compile(r"\d+")},
-            {"name":"string" ,"type":"literal", "re":re.compile(r'"\w*"')},
+            {"name":"string" ,"type":"literal", "re":re.compile(r'"[^"]*"')},
             {"name":"+" ,"type":"operator", "re":re.compile(r"\+")},
             {"name":"-" ,"type":"operator", "re":re.compile(r"-")},
             {"name":"*" ,"type":"operator", "re":re.compile(r"\*")},
@@ -68,8 +68,8 @@ class Tokenize:
         "return None if not found"
         i = 0
         match = None
-        while i < len(self.token_list) and match == None:
-            match = self.token_list[i]["re"].match(self.code[self.cursor:])
+        while i < len(self.token_description) and match == None:
+            match = self.token_description[i]["re"].match(self.code[self.cursor:])
             i += 1
         # so i points to found token
         i -= 1
@@ -78,7 +78,7 @@ class Tokenize:
             token = None
         else:
             self.cursor_move(match.end())
-            token = Token(i, self.token_list[i]["name"], self.token_list[i]["type"], match.group())
+            token = Token(i, self.token_description[i]["name"], self.token_description[i]["type"], match.group())
         return token
         
     def tokenize(self, code:str):
@@ -93,30 +93,12 @@ class Tokenize:
             while self.get_cur() in " \n":
                 self.cursor_move()
                 
-            #comments
+            # remove comments
             if self.get_cur() == "/":
                 self.cursor_move()
                 if self.get_cur() == "/":
                     while self.get_cur() != "\n" and not self.cursor_at_end():
                         self.cursor_move()
-            
-            #strings
-            '''
-            if self.get_cur() == '"':
-                end = False
-                string = ""
-                self.cursor_move()
-                while not end:
-                    if self.get_cur() == "\\":
-                        self.cursor_move()
-                        string = string + self.get_cur()
-                    elif self.get_cur() == "\"":
-                        end = True
-                    else:
-                        string = string + self.get_cur()
-                    self.cursor_move()
-                self.tokens.append(Token("string", "literal", string))
-            '''
             
             if not self.cursor_at_end():
                 token = self.get_next_token()

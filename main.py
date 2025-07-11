@@ -5,7 +5,7 @@ from src import Token, Tokenize, Symbol, Grammar
 def run_tokenizer():
     tokenize = Tokenize()
     
-    fh = open('specification/test.code', 'r')
+    fh = open('specification/test.e', 'r')
     code = fh.read()
     fh.close()
     
@@ -13,7 +13,7 @@ def run_tokenizer():
     
     
     for token in tokenize.tokens:
-        print(token.type, token.value,end='\n')
+        print(token.type, token.content,end='\n')
     print()
     
     
