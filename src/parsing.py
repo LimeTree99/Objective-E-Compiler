@@ -203,4 +203,7 @@ class Grammar:
             s = s[:-1]
         return s
     
-    
+
+class LL1_Table:
+    def __init__(self):
+        pass

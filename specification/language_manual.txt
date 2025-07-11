@@ -48,27 +48,28 @@ Notes on grammar:
 
 context free grammar: pre left factoring
     "?" indicates I still need to write that production
-    some troubles: how do I differentiate between a type and an identifier? do I need to? I think that'll come later
     START           ->  CLASS | IMPORT
     IMPORT          ->  import identifier
     CLASS           ->  class identifier { CLASS_CONTENT }
     CLASS_CONTENT   ->  FUNC_DEC | CLASS | ATTRIBUTE
-    ATTRIBUTE       ->  TYPE identifier ;
-    FUNC_DEC        ->  TYPE identifier ( ARGS ) { STMT }
+    ATTRIBUTE       ->  identifier identifier ;
+    FUNC_DEC        ->  identifier identifier ( ARGS ) { STMT }
     # 1
     ARGS            ->  ARG | ARG , ARGS | ε    
-    ARG             ->  TYPE identifier | TYPE identifier = literal
+    ARG             ->  identifier identifier | identifier identifier = literal
     # 2
     BOOL_EXPR       ->  BOOL_TERM | BOOL_TERM BOOL_OP BOOL_EXPR
     BOOL_OP         ->  & | "|" 
-    BOOL_TERM       ->  literal | FUNC | identifier
+    BOOL_TERM       ->  BOOL_TERM' | ! BOOL_TERM'   
+    BOOL_TERM'      ->  literal | FUNC | identifier
     
     
     STMT            ->  FUNC | DECLARATION | identifier = ASIGNMENT | BRANCH | LOOP | RETURN
     
     FUNC            ->  identifier ( ? ) ;
     
-    DECLARATION     ->  identifier identifier ; | identifier identifier = ASIGNMENT ;
+    DECLARATION     ->  identifier identifier DECLARATION' | identifier identifier DECLARATION'
+    DECLARATION'    ->  ; | = ASIGNMENT ;
     
     ASIGNMENT       ->  BOOL_EXPR | 
     
