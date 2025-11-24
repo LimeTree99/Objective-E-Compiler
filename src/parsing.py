@@ -77,7 +77,6 @@ class Symbol:
         # follow(B) = follow(C) = follow(C)
         
         if len(self.follow) == 0:
-            print('compute follow of ' + self.name)
             if self.name == grammar.productions[0].name:
                 self.follow.append('$')
             for search_prod in grammar.productions:
@@ -88,7 +87,6 @@ class Symbol:
                             if self.name == rule_split[index]:
                                 if index + 1 == len(rule_split):
                                     # at end of this production
-                                    print(self.name +'at end of production'+search_prod.name)
                                     search_prod.compute_follow(grammar)
                                     self.follow.extend(search_prod.follow)
                                     pass
@@ -97,11 +95,9 @@ class Symbol:
                                     next_prod = grammar.get_production(rule_split[index + 1])
                                     if next_prod == None:
                                         # terminal
-                                        print(rule_split[index + 1], ' add to ' + self.name)
                                         self.follow.append(rule_split[index + 1])
                                     else:
                                         # other production
-                                        print(next_prod.get_first(), ' add to ' + self.name)
                                         self.follow.extend(next_prod.get_first())
                                         if 'ε' in next_prod.get_first():
                                             self.follow.remove('ε')
@@ -128,8 +124,23 @@ class Symbol:
         
     
 class Grammar:
-    def __init__(self, productions):
-        self.productions = productions
+    def __init__(self, definition):
+        """
+        the definition can either be a list of symbols or a correcly formated string to be parsed  
+        """
+        if type(definition) == str:
+            # a quick and dirty parser for the string definitions of grammars 
+            self.productions = []
+    
+            for line in definition.split('\n'):
+                line = line.strip()
+                if line != '' and line[0] != '#':
+                    line = line.split('->')
+                    line[0] = line[0].strip()
+                    line[1] = line[1].strip()
+                    self.productions.append(Symbol(line[0], line[1].split(' | '), False))
+        else:
+            self.productions = definition
         
     def link(self):
         # I do not trust that this is correct
@@ -204,6 +215,62 @@ class Grammar:
         return s
     
 
+
+# how do I wnat to do the accesing of table elements? dict (obvously)
+# for x it should be the Token.id accesed through Grammar.
 class LL1_Table:
-    def __init__(self):
+    def __init__(self, grammar:Grammar):
+        self.grammar = grammar
+        self.table = {}
+        self.terminals = []
+        
+        self.generate_table()
+        # table structure
+        # {  
+        #   production_name(str) : { 
+        #       token_name(str) : production
+        #   }
+        # }
+        #
+        #
+        
+    # should I just put this in __init__ ?
+    # what does the above question mean? why would I do that?
+    def generate_table(self):
+        "generate the table based on the given grammar"  
+        for prod in self.grammar.productions:
+            self.table[prod.name] = {}
+            #print("production: " + prod.name)
+            for i in range(len(prod.rules)):
+                rule = prod.rules[i]
+                first = prod.first[i]
+                self.terminals = list(set(self.terminals + first))
+                #print("\trule: "+ rule + ", first: " + str(first))                
+                for token in first:
+                    self.table[prod.name][token] = rule
+                    
+        print()
+    
+    def parse(self, tokens):
         pass
+           
+    def print(self, space=20):
+        print(space * ' ',end='')
+        for terminal in self.terminals:
+            print('|' + terminal + ((space-len(terminal)) * ' '), end='')
+        print()
+        for prod in self.table:
+            print(prod + ((space-len(prod)) * ' '), end='')
+            for terminal in self.terminals:
+                if terminal in self.table[prod]:
+                    print('|' + self.table[prod][terminal] + ((space-len(self.table[prod][terminal])) * ' '), end='')
+                else:
+                    print('|' + space * '-', end='')
+            print()
+        
+                
+        
+        
+        
+        
+        

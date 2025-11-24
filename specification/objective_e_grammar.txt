@@ -1,0 +1,6 @@
+S -> CLASS | IMPORT
+IMPORT -> import identifier
+
+CLASS -> class identifier { CLASS_CONTENT }
+CLASS_CONTENT   ->  identifier identifier A' | CLASS 
+A'              ->  ; | ( ARGS ) { STMT }

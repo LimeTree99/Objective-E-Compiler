@@ -1,8 +1,10 @@
-from src import Token, Tokenize, Symbol, Grammar
+from src import Token, Tokenize, Symbol, Grammar, LL1_Table
  
-
     
-def run_tokenizer():
+    
+def run():
+    print('Objective E')
+    
     tokenize = Tokenize()
     
     fh = open('specification/test.e', 'r')
@@ -10,69 +12,44 @@ def run_tokenizer():
     fh.close()
     
     tokenize.tokenize(code)
-    
-    
+    print('----------------')
+    print('| TOKENIZATION |')
+    print('----------------')
     for token in tokenize.tokens:
-        print(token.type, token.content,end='\n')
+        print(token.line, token.type, token.content,end='\n')
     print()
     
-    
-def language_grammar():
-    print('Objective E Grammar')
-    
-    a = [
-        ['S',['CLASS','IMPORT']],
-        ['IMPORT',['import identifier']],
-        ['CLASS',['class identifier { CLASS_CONTENT }']],
-        []
-    ]
-    format_gram = []
-    for line in a:
-        format_gram.append(Symbol(a[0], a[1], False))
-    
-    gram = Grammar(format_gram)
-    
+    fh = open('specification/objective_e_grammar.txt', 'r')
+    grammar_string = fh.read()
+    fh.close()
+        
+    gram = Grammar(grammar_string)
+    print('---------------------')
+    print('| GRAMMAR FROM FILE |')
+    print('---------------------')
     print(gram)
+    print('------------------------------------------')
     
     gram.link()
     gram.compute_first()
     gram.compute_follow()
-    print('------------------------------------------')
-    gram.print_first_follow()
-            
-if __name__ == '__main__':
-    run_tokenizer()
-    print('==========================================')
     print()
-    print('Gram 1')
-    gram1 = Grammar([Symbol('S', ['INT OP INT', 'INT', 'ε'], False),
-                    Symbol('OP', ['+','-', '*', '/'], False),
-                    Symbol('INT', ['1','2','3','4','5'], False),
-                    ],)
-    
-    print(gram1)
-    
-    gram1.link()
-    gram1.compute_first()
-    gram1.compute_follow()
+    print('-----------------------------------')
+    print('| FIRST & FOLLOW OF ABOVE GRAMMAR |')
+    print('-----------------------------------')
+    gram.print_first_follow()
     print('------------------------------------------')
-    gram1.print_first_follow()
-    
-    print('==========================================')
-    print('Gram 2')
-    gram2 = Grammar([
-                        Symbol('S', ['START MAYBE end'], False),
-                        Symbol('START', ['start'], False),
-                        Symbol('MAYBE', ['maybe', 'ε'], False),
-                    ],)
-    
-    print(gram2)
-    
-    gram2.link()
-    gram2.compute_first()
-    gram2.compute_follow()
+    print()
+    print('-------------------------------')
+    print('| LL1 TABLE OF ABOVE GRAMMEAR |')
+    print('-------------------------------')
+    lex = LL1_Table(gram)
+    lex.print()
     print('------------------------------------------')
-    gram2.print_first_follow()
+    
+if __name__ == '__main__':
+    run()
+    
     
     
     

@@ -2,14 +2,15 @@ import re
 
 
 class Token:
-    def __init__(self, id, name, typ, content):
+    def __init__(self, id, name, typ, content, line):
         self.id = id
         self.name = name
         self.type = typ
         self.content = content
+        self.line = line
         
     def __str__(self):
-        return f"<Token object; id={self.id} name={self.name} type={self.type}, content={self.content}>"
+        return f"<Token object; id={self.id} name={self.name} type={self.type}, content={self.content}>"          
 
 class Tokenize:
     def __init__(self):
@@ -44,6 +45,11 @@ class Tokenize:
         self.cursor = 0
         self.code = None
         
+    def get_alphabet(self):
+        alphabet = []
+        for token in self.token_description:
+            alphabet.append(token.name)
+        
     def get_cur(self)->str:
         "return the current character that the cursor is on"
         return self.code[self.cursor]
@@ -63,7 +69,7 @@ class Tokenize:
         else:
             return False
         
-    def get_next_token(self)->re.Match:
+    def get_next_token(self, line)->re.Match:
         "return the next token and advance cursor to after it"
         "return None if not found"
         i = 0
@@ -78,21 +84,24 @@ class Tokenize:
             token = None
         else:
             self.cursor_move(match.end())
-            token = Token(i, self.token_description[i]["name"], self.token_description[i]["type"], match.group())
+            token = Token(i, self.token_description[i]["name"], self.token_description[i]["type"], match.group(), line)
         return token
         
     def tokenize(self, code:str):
         self.code = code
         token_i = 0
         found = False
+        cur_line = 1
         
         
         while not self.cursor_at_end():
             
             # remove whitespace
             while self.get_cur() in " \n":
+                if self.get_cur() == "\n":
+                    cur_line += 1
                 self.cursor_move()
-                
+                            
             # remove comments
             if self.get_cur() == "/":
                 self.cursor_move()
@@ -101,7 +110,7 @@ class Tokenize:
                         self.cursor_move()
             
             if not self.cursor_at_end():
-                token = self.get_next_token()
+                token = self.get_next_token(cur_line)
                 
                 if token != None:
                     self.tokens.append(token)  
